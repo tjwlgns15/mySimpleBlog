@@ -1,4 +1,4 @@
-package com.jihun.mysimpleblog.auth.filter;
+package com.jihun.mysimpleblog.auth.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
@@ -29,15 +29,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtAuthenticationFilter(
-            JwtTokenProvider jwtTokenProvider,
-            ObjectMapper objectMapper
-    ) throws Exception {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.objectMapper = objectMapper;
-
-        // 로그인 URL 설정
-        setFilterProcessesUrl("/api/auth/login");
     }
 
     @Override

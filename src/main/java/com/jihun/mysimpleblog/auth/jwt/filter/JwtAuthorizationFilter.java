@@ -1,4 +1,4 @@
-package com.jihun.mysimpleblog.auth.filter;
+package com.jihun.mysimpleblog.auth.jwt.filter;
 
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.auth.jwt.JwtTokenProvider;
@@ -26,10 +26,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    public JwtAuthorizationFilter(
-            JwtTokenProvider jwtTokenProvider,
-            UserRepository userRepository
-    ) {
+    public JwtAuthorizationFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
     }

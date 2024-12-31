@@ -19,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -38,6 +38,7 @@ spring:
             scope:
               - email
               - profile
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
           kakao:
             client-id: "${KAKAO_REST_API_KEY}"
             client-secret: "${KAKAO_CLIENT_SECRET}"
@@ -72,7 +73,11 @@ spring:
 
 jwt:
   secret: "${JWT_SECRET_CODE}"
-  access-token-validity: 1800  # 30?
+  access-token-validity: 1800
 
 cors:
   allowed-origins: http://localhost:8080
+
+app:
+  oauth2:
+    authorized-redirect-uri: http://localhost:8080/user  # 소셜 로그인 후 리다이렉트될 URI

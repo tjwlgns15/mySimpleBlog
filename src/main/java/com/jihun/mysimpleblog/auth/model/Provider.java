@@ -6,10 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Provider {
-    LOCAL("local"),
-    GOOGLE("google"),
-    KAKAO("kakao"),
-    NAVER("naver");
-
-    private final String registrationId;
+    LOCAL,      // 일반 회원가입
+    GOOGLE,     // 구글 로그인
+    NAVER,      // 네이버 로그인
+    KAKAO       // 카카오 로그인
 }

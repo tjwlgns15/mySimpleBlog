@@ -24,6 +24,33 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .user-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .user-info h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .user-info p {
+            margin: 8px 0;
+            color: #666;
+        }
+        .user-info strong {
+            color: #333;
+            width: 100px;
+            display: inline-block;
+        }
+        .error-message {
+            color: #dc3545;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -32,22 +59,67 @@
         <h2>Welcome to User Page</h2>
         <button onclick="logout()" class="btn-logout">Logout</button>
     </div>
-    <div id="content">
-        <!-- Protected content here -->
+    <div id="error-message" class="error-message">
+        Failed to load user information. Please try again later.
+    </div>
+    <div id="user-info" class="user-info">
+        <h3>User Information</h3>
+        <div id="user-details">
+            Loading...
+        </div>
     </div>
 </div>
 
 <script>
-    // 페이지 로드 시 토큰 체크
-    window.onload = function() {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/login.html';
-            return;
+    // URL에서 token 파라미터 체크
+    window.onload = async function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token) {
+            localStorage.setItem('token', token);
+            // token 파라미터 제거
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
-
-        // 여기서 필요한 경우 서버에 토큰 유효성 검증 요청을 할 수 있습니다
+        await loadUserInfo();
     };
+
+    async function loadUserInfo() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/home/login';
+                return;
+            }
+
+            const response = await fetch('http://localhost:8080/api/auth/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load user information');
+            }
+
+            const user = await response.json();
+            displayUserInfo(user);
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('user-details').innerHTML = 'Failed to load user information';
+        }
+    }
+
+    function displayUserInfo(user) {
+        const userDetails = document.getElementById('user-details');
+        userDetails.innerHTML = `
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Name:</strong> ${user.name}</p>
+            <p><strong>Role:</strong> ${user.role}</p>
+            <p><strong>Provider:</strong> ${user.provider || 'Local'}</p>
+        `;
+    }
 
     function logout() {
         localStorage.removeItem('token');

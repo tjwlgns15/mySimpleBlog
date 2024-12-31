@@ -47,4 +47,8 @@ public class User {
         this.providerId = providerId;
         this.role = role != null ? role : Role.USER;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

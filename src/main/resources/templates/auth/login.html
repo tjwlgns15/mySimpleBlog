@@ -39,6 +39,57 @@
             margin-top: 10px;
             display: none;
         }
+
+        /* 소셜 로그인 관련 스타일 */
+        .social-login {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .social-login h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 16px;
+        }
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .social-btn:hover {
+            opacity: 0.9;
+        }
+        .social-btn img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .google-btn {
+            background-color: #fff;
+            color: #757575;
+            border: 1px solid #ddd;
+        }
+        .naver-btn {
+            background-color: #03C75A;
+            color: white;
+        }
+        .kakao-btn {
+            background-color: #FEE500;
+            color: #000000;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +107,25 @@
         <button type="submit" class="btn">Login</button>
         <div id="errorMessage" class="error-message">Invalid email or password</div>
     </form>
+
+    <!-- 소셜 로그인 섹션 -->
+    <div class="social-login">
+        <h3>Or Login With</h3>
+        <div class="social-buttons">
+            <a href="/oauth2/authorization/google" class="social-btn google-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+                Continue with Google
+            </a>
+            <a href="/oauth2/authorization/naver" class="social-btn naver-btn">
+                <img src="https://play-lh.googleusercontent.com/V1VwF8W0ODrpjpYzZ0j1EJ0ZzxNyyy9QxQU_Nx-jL4qGAgFy-cYjFkO8G6EJqYWcqoM" alt="Naver">
+                Continue with Naver
+            </a>
+            <a href="/oauth2/authorization/kakao" class="social-btn kakao-btn">
+                <img src="https://play-lh.googleusercontent.com/Ob9Ys8yKMeyKzZvl3cB9JNSTui1lJwjSKD60IVYnD-8Mj4-BGh9zRGRGQBTKTRR_DqYm" alt="Kakao">
+                Continue with Kakao
+            </a>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -80,11 +150,7 @@
             }
 
             const data = await response.json();
-
-            // 토큰 저장
             localStorage.setItem('token', data.token);
-
-            // 로그인 성공 시 /user 페이지로 이동
             window.location.href = '/user';
 
         } catch (error) {
