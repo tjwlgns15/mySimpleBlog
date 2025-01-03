@@ -12,6 +12,7 @@ import com.jihun.mysimpleblog.board.entity.dto.comment.CommentUpdateDto;
 import com.jihun.mysimpleblog.board.entity.dto.post.PageResponse;
 import com.jihun.mysimpleblog.board.repository.CommentRepository;
 import com.jihun.mysimpleblog.board.repository.PostRepository;
+import com.jihun.mysimpleblog.global.constant.GlobalConstant;
 import com.jihun.mysimpleblog.global.exception.CustomException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -87,25 +88,14 @@ public class CommentService {
         return CommentResponse.fromEntity(savedComment);
     }
 
-//    public List<CommentResponse> getComments(Long postId) {
-//        postRepository.findById(postId).orElseThrow(
-//                () -> new CustomException(NOT_FOUND_POST));
-//
-//        return commentRepository.findByPostIdAndParentIsNullOrderByCreatedAtDesc(postId).stream()
-//                .map(CommentResponse::fromEntity)
-//                .toList();
-//    }
-public PageResponse<CommentResponse> getComments(Long postId, int page) {
-    // 게시글 존재 여부 확인
-    postRepository.findById(postId)
-            .orElseThrow(() -> new CustomException(NOT_FOUND_POST));
+    public PageResponse<CommentResponse> getComments(Long postId, int page) {
+        Page<Comment> comments = commentRepository.findByPostIdWithAuthor(
+                postId,
+                PageRequest.of(page, GlobalConstant.COMMENT_PAGE_SIZE)
+        );
 
-    Pageable pageable = PageRequest.of(page, COMMENT_PAGE_SIZE);
-    Page<Comment> comments = commentRepository.findByPostIdWithChildrenAndAuthor(postId, pageable);
-
-    Page<CommentResponse> commentResponses = comments.map(CommentResponse::fromEntity);
-    return new PageResponse<>(commentResponses);
-}
+        return new PageResponse<>(comments.map(CommentResponse::fromEntity));
+    }
 
     @Transactional
     public CommentResponse update(Long id, CommentUpdateDto dto, CustomUserDetails userDetails) {

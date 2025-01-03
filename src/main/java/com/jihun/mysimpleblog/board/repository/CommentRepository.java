@@ -12,14 +12,11 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByPostIdAndParentIsNullOrderByCreatedAtDesc(Long postId);
-
-    @Query("SELECT DISTINCT c FROM Comment c " +
-            "LEFT JOIN FETCH c.children " +
-            "LEFT JOIN FETCH c.author " +
+    @Query("SELECT c FROM Comment c " +
+            "JOIN FETCH c.author " +     // ManyToOne은 페치 조인
             "WHERE c.post.id = :postId " +
             "AND c.parent IS NULL " +
             "ORDER BY c.createdAt DESC")
-    Page<Comment> findByPostIdWithChildrenAndAuthor(@Param("postId") Long postId, Pageable pageable);
+    Page<Comment> findByPostIdWithAuthor(@Param("postId") Long postId, Pageable pageable);
 
 }

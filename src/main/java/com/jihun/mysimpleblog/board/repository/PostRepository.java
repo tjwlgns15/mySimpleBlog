@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("SELECT p FROM Post p " +
+    @Query("SELECT DISTINCT p FROM Post p " +
             "JOIN FETCH p.author " +
             "JOIN FETCH p.category " +
             "WHERE (:title IS NULL OR p.title LIKE %:title%) " +

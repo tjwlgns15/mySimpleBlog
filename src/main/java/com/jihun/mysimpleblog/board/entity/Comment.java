@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 

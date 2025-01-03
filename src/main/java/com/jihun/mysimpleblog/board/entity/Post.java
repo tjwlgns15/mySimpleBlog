@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Post extends BaseTimeEntity {
     @Column(name = "view_count")
     private int viewCount = 0;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> likes = new ArrayList<>();
 
