@@ -3,16 +3,14 @@ package com.jihun.mysimpleblog.auth.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.auth.jwt.JwtTokenProvider;
-import com.jihun.mysimpleblog.auth.model.dto.LoginRequest;
+import com.jihun.mysimpleblog.auth.entity.dto.LoginRequest;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.hibernate.annotations.DialectOverride;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -57,7 +55,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader("Authorization", "Bearer " + token);
 
         // JWT 토큰을 쿠키에 추가
-        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", token);
+        Cookie cookie = new Cookie("jwt", token);
         cookie.setHttpOnly(true);  // JavaScript에서 접근 불가능하게 설정
         cookie.setSecure(true);    // HTTPS에서만 전송되도록 설정
         cookie.setPath("/");       // 모든 경로에서 접근 가능하도록 설정

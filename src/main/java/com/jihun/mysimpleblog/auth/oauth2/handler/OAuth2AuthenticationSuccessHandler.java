@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String token = jwtTokenProvider.createToken(userDetails.getUsername(), userDetails.getUser().getRole());
+
+        // JWT 토큰을 쿠키에 추가
+        Cookie cookie = new Cookie("jwt", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(3600); // 1시간
+        response.addCookie(cookie);
 
         // 토큰을 URL 파라미터로 추가
         targetUrl = UriComponentsBuilder.fromUriString(targetUrl)

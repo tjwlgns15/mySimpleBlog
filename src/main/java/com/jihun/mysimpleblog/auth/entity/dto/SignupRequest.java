@@ -1,8 +1,8 @@
-package com.jihun.mysimpleblog.auth.model.dto;
+package com.jihun.mysimpleblog.auth.entity.dto;
 
-import com.jihun.mysimpleblog.auth.model.Provider;
-import com.jihun.mysimpleblog.auth.model.Role;
-import com.jihun.mysimpleblog.auth.model.User;
+import com.jihun.mysimpleblog.auth.entity.Provider;
+import com.jihun.mysimpleblog.auth.entity.Role;
+import com.jihun.mysimpleblog.auth.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

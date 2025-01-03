@@ -1,4 +1,4 @@
-package com.jihun.mysimpleblog.auth.model.dto;
+package com.jihun.mysimpleblog.auth.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

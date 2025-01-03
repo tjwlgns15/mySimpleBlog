@@ -1,8 +1,7 @@
 package com.jihun.mysimpleblog.auth.config.core;
 
-import com.jihun.mysimpleblog.auth.model.User;
+import com.jihun.mysimpleblog.auth.entity.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

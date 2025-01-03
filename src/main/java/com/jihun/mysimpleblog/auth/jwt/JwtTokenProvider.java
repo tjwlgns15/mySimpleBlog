@@ -1,7 +1,7 @@
 package com.jihun.mysimpleblog.auth.jwt;
 
-import com.jihun.mysimpleblog.auth.model.Role;
-import com.jihun.mysimpleblog.auth.model.User;
+import com.jihun.mysimpleblog.auth.entity.Role;
+import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.auth.repository.UserRepository;
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import io.jsonwebtoken.Claims;

@@ -1,9 +1,9 @@
 package com.jihun.mysimpleblog.auth.controller;
 
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
-import com.jihun.mysimpleblog.auth.model.User;
-import com.jihun.mysimpleblog.auth.model.dto.SignupRequest;
-import com.jihun.mysimpleblog.auth.model.dto.UserResponse;
+import com.jihun.mysimpleblog.auth.entity.User;
+import com.jihun.mysimpleblog.auth.entity.dto.SignupRequest;
+import com.jihun.mysimpleblog.auth.entity.dto.UserResponse;
 import com.jihun.mysimpleblog.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

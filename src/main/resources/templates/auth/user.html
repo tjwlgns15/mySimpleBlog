@@ -122,8 +122,18 @@
     }
 
     function logout() {
-        localStorage.removeItem('token');
-        window.location.href = '/home/login';
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/'; // 홈으로 리다이렉트
+                }
+            })
+            .catch(error => {
+                console.error('Logout failed:', error);
+            });
     }
 </script>
 </body>

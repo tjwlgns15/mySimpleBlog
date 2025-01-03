@@ -1,13 +1,12 @@
 package com.jihun.mysimpleblog.auth.oauth2;
 
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
-import com.jihun.mysimpleblog.auth.model.Provider;
-import com.jihun.mysimpleblog.auth.model.User;
+import com.jihun.mysimpleblog.auth.entity.Provider;
+import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.auth.oauth2.userinfo.OAuth2UserInfo;
 import com.jihun.mysimpleblog.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static com.jihun.mysimpleblog.auth.model.Role.USER;
+import static com.jihun.mysimpleblog.auth.entity.Role.USER;
 
 
 @Service

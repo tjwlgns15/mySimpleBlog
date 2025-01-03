@@ -2,7 +2,7 @@ package com.jihun.mysimpleblog.auth.jwt.filter;
 
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.auth.jwt.JwtTokenProvider;
-import com.jihun.mysimpleblog.auth.model.User;
+import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.auth.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

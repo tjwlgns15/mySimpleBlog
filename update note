@@ -1,0 +1,7 @@
+# new simpleBlog - jwt
+ - 회원가입
+ - spring security, jwt를 사용한 필터 단계 로그인 인증 구현
+
+# oauth2 ~ing
+ - OAuth2 활용 소셜 로그인 구현 중 (구글, 네이버, 카카오)
+ - 본인 확인

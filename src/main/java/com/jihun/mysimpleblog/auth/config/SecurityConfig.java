@@ -2,6 +2,9 @@ package com.jihun.mysimpleblog.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetailsService;
+import com.jihun.mysimpleblog.auth.config.handler.CustomAccessDeniedHandler;
+import com.jihun.mysimpleblog.auth.config.handler.CustomAuthenticationEntryPoint;
+import com.jihun.mysimpleblog.auth.config.handler.CustomLogoutHandler;
 import com.jihun.mysimpleblog.auth.jwt.filter.JwtAuthenticationFilter;
 import com.jihun.mysimpleblog.auth.jwt.filter.JwtAuthorizationFilter;
 import com.jihun.mysimpleblog.auth.jwt.JwtTokenProvider;
@@ -9,6 +12,7 @@ import com.jihun.mysimpleblog.auth.oauth2.CustomOAuth2UserService;
 import com.jihun.mysimpleblog.auth.oauth2.OAuth2UserInfoFactory;
 import com.jihun.mysimpleblog.auth.oauth2.handler.OAuth2AuthenticationSuccessHandler;
 import com.jihun.mysimpleblog.auth.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,32 +40,56 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilter(corsConfig().corsFilter())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers("/", "/home/**").permitAll()
-                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
+        configureAuthorization(http);
+        configureExceptionHandling(http);
+        configureOAuth2(http);
+        configureLogout(http);
 
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/home/login")
-                        .defaultSuccessUrl("/user")
-                        .userInfoEndpoint(userInfo ->
-                                userInfo.userService(customOAuth2UserService()))
-                        .successHandler(oAuth2AuthenticationSuccessHandler())
-                )
-                .build();
+        return http.build();
+    }
+
+    private void configureAuthorization(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**", "/oauth2/**", "/login/**").permitAll()
+                .requestMatchers("/", "/home/**", "/boards", "/boards/**").permitAll()
+                .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/user/**", "/api/posts/**", "/api/comments/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/admin/**", "/api/categories/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+        );
+    }
+
+    private void configureExceptionHandling(HttpSecurity http) throws Exception {
+        http.exceptionHandling(handling -> handling
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
+                .accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper))
+        );
+    }
+
+    private void configureOAuth2(HttpSecurity http) throws Exception {
+        http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/home/login")
+                .defaultSuccessUrl("/user")
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService()))
+                .successHandler(oAuth2AuthenticationSuccessHandler())
+        );
+    }
+
+    private void configureLogout(HttpSecurity http) throws Exception {
+        http.logout(logout -> logout
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessUrl("/")
+                .addLogoutHandler(new CustomLogoutHandler())
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+        );
     }
 
     @Bean

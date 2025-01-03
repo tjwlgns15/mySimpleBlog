@@ -1,6 +1,6 @@
 package com.jihun.mysimpleblog.auth.config.core;
 
-import com.jihun.mysimpleblog.auth.model.User;
+import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
