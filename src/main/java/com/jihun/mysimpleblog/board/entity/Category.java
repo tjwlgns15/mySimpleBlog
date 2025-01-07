@@ -2,6 +2,7 @@ package com.jihun.mysimpleblog.board.entity;
 
 import com.jihun.mysimpleblog.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,4 +21,8 @@ public class Category extends BaseTimeEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    public void update(String name) {
+        this.name = name;
+    }
 }

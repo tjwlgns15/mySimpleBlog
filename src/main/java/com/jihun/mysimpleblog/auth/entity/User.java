@@ -1,14 +1,11 @@
 package com.jihun.mysimpleblog.auth.entity;
 
-import com.jihun.mysimpleblog.board.entity.ProfileImage;
 import com.jihun.mysimpleblog.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.awt.*;
 
 @Entity
 @Table(name = "users")

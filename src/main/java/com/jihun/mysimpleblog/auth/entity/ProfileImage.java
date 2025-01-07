@@ -1,6 +1,5 @@
-package com.jihun.mysimpleblog.board.entity;
+package com.jihun.mysimpleblog.auth.entity;
 
-import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;

@@ -32,18 +32,7 @@ public class BoardViewController {
 //        return "board/boards";
 //    }
 
-    @GetMapping
-    public ApiResponse<PageResponse<PostResponse>> searchPosts(
-            @ModelAttribute PostSearchDto searchDto,
-            @RequestParam(defaultValue = "0") int page) {
-        Page<PostResponse> postPage = postService.searchPosts(searchDto, page);
-        return ApiResponse.success(new PageResponse<>(postPage));
-    }
 
-    @GetMapping("/post/{postId}")
-    public ApiResponse<PageResponse<CommentResponse>> getComments(
-            @PathVariable Long postId,
-            @RequestParam(defaultValue = "0") int page) {
-        return ApiResponse.success(commentService.getComments(postId, page));
-    }
+
+
 }

@@ -6,10 +6,7 @@ import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.auth.repository.UserRepository;
 import com.jihun.mysimpleblog.board.entity.Category;
 import com.jihun.mysimpleblog.board.entity.Post;
-import com.jihun.mysimpleblog.board.entity.dto.post.PostFormDto;
-import com.jihun.mysimpleblog.board.entity.dto.post.PostResponse;
-import com.jihun.mysimpleblog.board.entity.dto.post.PostSearchDto;
-import com.jihun.mysimpleblog.board.entity.dto.post.PostUpdateDto;
+import com.jihun.mysimpleblog.board.entity.dto.post.*;
 import com.jihun.mysimpleblog.board.repository.CategoryRepository;
 import com.jihun.mysimpleblog.board.repository.PostRepository;
 import com.jihun.mysimpleblog.global.exception.CustomException;
@@ -48,6 +45,17 @@ public class PostService {
         );
 
         return posts.map(PostResponse::fromEntity);
+    }
+
+    @Transactional
+    public PostResponse getPost(Long id) {
+        Post post = postRepository.findByIdWithAuthorAndCategory(id)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_POST));
+
+        // todo: 추후에 Redis 공부하면서 Redis + IP 방식으로 추가
+        post.incrementViewCount();
+
+        return PostResponse.fromEntity(post);
     }
 
 

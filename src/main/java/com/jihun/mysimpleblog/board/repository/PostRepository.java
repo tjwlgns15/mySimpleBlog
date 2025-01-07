@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -21,4 +23,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("title") String title,
             @Param("authorName") String authorName,
             Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.category " +
+            "WHERE p.id = :id")
+    Optional<Post> findByIdWithAuthorAndCategory(@Param("id") Long id);
+
+    boolean existsByCategoryId(Long id);
+
 }

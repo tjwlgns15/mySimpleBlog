@@ -20,3 +20,8 @@
  - 패치조인, 페이징 동시 사용으로 문제 발생 -> BatchSize 적용으로 쿼리 성능 최적화
 
  - "boards" 커밋 update note 추가
+
+# PostLike
+ - 게시물 좋아요, 조회수 추가
+
+ - 쿼리 확인용 의존성 추가 ( P6spyConfig, spy.properties )

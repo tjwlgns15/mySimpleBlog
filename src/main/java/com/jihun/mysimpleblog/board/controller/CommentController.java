@@ -4,6 +4,7 @@ import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.board.entity.dto.comment.CommentFormDto;
 import com.jihun.mysimpleblog.board.entity.dto.comment.CommentResponse;
 import com.jihun.mysimpleblog.board.entity.dto.comment.CommentUpdateDto;
+import com.jihun.mysimpleblog.board.entity.dto.post.PageResponse;
 import com.jihun.mysimpleblog.board.service.CommentService;
 import com.jihun.mysimpleblog.board.service.PostService;
 import com.jihun.mysimpleblog.global.entity.ApiResponse;
@@ -25,26 +26,33 @@ public class CommentController {
     private final CommentService commentService;
     private final PostService postService;
 
-    @PostMapping("/new")
-    public ApiResponse<CommentResponse> createComment(
-            @RequestBody @Valid CommentFormDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.success(commentService.create(dto, userDetails));
-    }
-
-    @PutMapping("/{id}")
-    public ApiResponse<CommentResponse> updateComment(
-            @PathVariable Long id,
-            @RequestBody @Valid CommentUpdateDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.success(commentService.update(id, dto, userDetails));
-    }
-
-    @DeleteMapping("/{id}")
-    public ApiResponse<CommentResponse> deleteComment(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        commentService.delete(id, userDetails);
-        return ApiResponse.success(null);
-    }
+//    @GetMapping("/post/{postId}")
+//    public ApiResponse<PageResponse<CommentResponse>> getComments(
+//            @PathVariable Long postId,
+//            @RequestParam(defaultValue = "0") int page) {
+//        return ApiResponse.success(commentService.getComments(postId, page));
+//    }
+//
+//    @PostMapping("/new")
+//    public ApiResponse<CommentResponse> createComment(
+//            @RequestBody @Valid CommentFormDto dto,
+//            @AuthenticationPrincipal CustomUserDetails userDetails) {
+//        return ApiResponse.success(commentService.create(dto, userDetails));
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ApiResponse<CommentResponse> updateComment(
+//            @PathVariable Long id,
+//            @RequestBody @Valid CommentUpdateDto dto,
+//            @AuthenticationPrincipal CustomUserDetails userDetails) {
+//        return ApiResponse.success(commentService.update(id, dto, userDetails));
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ApiResponse<CommentResponse> deleteComment(
+//            @PathVariable Long id,
+//            @AuthenticationPrincipal CustomUserDetails userDetails) {
+//        commentService.delete(id, userDetails);
+//        return ApiResponse.success(null);
+//    }
 }

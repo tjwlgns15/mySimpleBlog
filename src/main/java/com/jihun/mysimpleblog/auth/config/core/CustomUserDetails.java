@@ -33,6 +33,9 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
+    public Long getId() {
+        return user.getId();
+    }
     // e-mail: 아이디로 사용
     @Override
     public String getUsername() {

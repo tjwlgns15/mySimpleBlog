@@ -37,7 +37,7 @@ public class Post extends BaseTimeEntity {
     @Column(name = "view_count")
     private int viewCount = 0;
 
-    @BatchSize(size = 100)
+//    @BatchSize(size = 100)
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> likes = new ArrayList<>();
 
@@ -80,5 +80,4 @@ public class Post extends BaseTimeEntity {
     public int getLikeCount() {
         return this.likes.size();
     }
-
 }
