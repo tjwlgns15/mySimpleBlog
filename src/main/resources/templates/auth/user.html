@@ -91,7 +91,7 @@
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/api/auth/me', {
+            const response = await fetch('http://localhost:8081/api/auth/me', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -122,18 +122,20 @@
     }
 
     function logout() {
-        fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'include'
-        })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/'; // 홈으로 리다이렉트
-                }
-            })
-            .catch(error => {
-                console.error('Logout failed:', error);
+        if (confirm('로그아웃 하시겠습니까?')) {
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            }).then(() => {
+                // 쿠키 삭제
+                document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                // 로그인 페이지로 이동
+                window.location.href = '/home';
+            }).catch(error => {
+                console.error('Logout error:', error);
+                alert('로그아웃 중 오류가 발생했습니다.');
             });
+        }
     }
 </script>
 </body>

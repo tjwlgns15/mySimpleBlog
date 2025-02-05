@@ -10,12 +10,14 @@ import com.jihun.mysimpleblog.board.entity.dto.post.*;
 import com.jihun.mysimpleblog.board.repository.CategoryRepository;
 import com.jihun.mysimpleblog.board.repository.PostRepository;
 import com.jihun.mysimpleblog.global.exception.CustomException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,12 +50,39 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse getPost(Long id) {
+    public PostResponse getPost(Long id, HttpServletRequest request, HttpServletResponse response) {
+
         Post post = postRepository.findByIdWithAuthorAndCategory(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_POST));
 
-        // todo: 추후에 Redis 공부하면서 Redis + IP 방식으로 추가
-        post.incrementViewCount();
+        // todo: 추후에 Redis 공부하면서 Redis + IP 방식으로 변경 ( 조회수 관련 )
+
+        // 쿠키 이름 생성 (post_{id}_view)
+        String cookieName = "post_" + id + "_view";
+        Cookie[] cookies = request.getCookies();
+        boolean hasViewCookie = false;
+
+        // 쿠키 확인
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    hasViewCookie = true;
+                    break;
+                }
+            }
+        }
+
+        // 쿠키가 없으면 조회수 증가 및 쿠키 생성
+        if (!hasViewCookie) {
+            // 조회수 증가
+            post.incrementViewCount();
+
+            // 쿠키 생성 (24시간 유효)
+            Cookie viewCookie = new Cookie(cookieName, "true");
+            viewCookie.setMaxAge(24 * 60 * 60);
+            viewCookie.setPath("/");
+            response.addCookie(viewCookie);
+        }
 
         return PostResponse.fromEntity(post);
     }
@@ -62,8 +91,9 @@ public class PostService {
     @Transactional
     public PostResponse create(@Valid PostFormDto dto, CustomUserDetails userDetails) {
         if (userDetails == null) {
-
+            throw new CustomException(NOT_AUTHORIZED);
         }
+
         log.info("Creating new post. title: {}, author: {}", dto.getTitle(), userDetails.getUsername());
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new CustomException(NOT_FOUND_USER));

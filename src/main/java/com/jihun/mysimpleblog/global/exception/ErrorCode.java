@@ -12,6 +12,8 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(400, "사용중인 이메일입니다."),
     DUPLICATE_NAME(400, "사용중인 닉네임입니다."),
     CATEGORY_HAS_POSTS(400, "해당 카테고리에 게시글이 존재하여 삭제할 수 없습니다."),
+    FILE_IS_EMPTY(400, "파일이 비어있습니다."),
+    INVALID_FILE_TYPE(400, "이미지 파일만 업로드 가능합니다."),
 
 
     // 401 Unauthorized
@@ -25,9 +27,15 @@ public enum ErrorCode {
     NOT_FOUND_POST(404, "게시글을 찾을 수 없습니다."),
     NOT_FOUND_COMMENT(404, "댓글을 찾을 수 없습니다."),
     CATEGORY_NOT_EXIST(404, "카테고리를 선택해 주세요."),
+    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
 
     // 409 Conflict
     DUPLICATE_CATEGORY_NAME(409, "존재하는 카테고리입니다."),
+
+    // 500
+    FILE_UPLOAD_ERROR(500, "파일 업로드에 실패했습니다."),
+    FILE_DELETE_ERROR(500, "파일 삭제에 실패했습니다.");
+
 
     ;
 

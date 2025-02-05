@@ -1,4 +1,4 @@
-package com.jihun.mysimpleblog.board.controller;
+package com.jihun.mysimpleblog.board.controller.api;
 
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.board.entity.dto.comment.CommentFormDto;
@@ -9,6 +9,8 @@ import com.jihun.mysimpleblog.board.service.CommentService;
 import com.jihun.mysimpleblog.board.service.PostLikeService;
 import com.jihun.mysimpleblog.board.service.PostService;
 import com.jihun.mysimpleblog.global.entity.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,16 +29,17 @@ public class PostController {
     private final CommentService commentService;
 
     @GetMapping
-    public ApiResponse<PageResponse<PostResponse>> searchPosts(
-            @ModelAttribute PostSearchDto searchDto,
-            @RequestParam(defaultValue = "0") int page) {
+    public ApiResponse<PageResponse<PostResponse>> searchPosts(@ModelAttribute PostSearchDto searchDto,
+                                                               @RequestParam(defaultValue = "0") int page) {
         Page<PostResponse> postPage = postService.searchPosts(searchDto, page);
         return ApiResponse.success(new PageResponse<>(postPage));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<PostResponse> getPost(@PathVariable Long id) {
-        return ApiResponse.success(postService.getPost(id));
+    public ApiResponse<PostResponse> getPost(@PathVariable Long id,
+                                             HttpServletRequest request,
+                                             HttpServletResponse response) {
+        return ApiResponse.success(postService.getPost(id, request, response));
     }
 
     @PostMapping("/new")
@@ -65,7 +68,7 @@ public class PostController {
      */
     @PostMapping("/{postId}/like")
     public ApiResponse<PostLikeResponse> toggleLike(@PathVariable Long postId,
-                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(postLikeService.toggleLike(postId, userDetails.getId()));
     }
 
@@ -79,34 +82,30 @@ public class PostController {
      * 댓글
      */
     @GetMapping("/{postId}/comments")
-    public ApiResponse<PageResponse<CommentResponse>> getComments(
-            @PathVariable Long postId,
-            @RequestParam(defaultValue = "0") int page) {
+    public ApiResponse<PageResponse<CommentResponse>> getComments(@PathVariable Long postId,
+                                                                  @RequestParam(defaultValue = "0") int page) {
         return ApiResponse.success(commentService.getComments(postId, page));
     }
 
     @PostMapping("/{postId}/comments/new")
-    public ApiResponse<CommentResponse> createComment(
-            @PathVariable Long postId,
-            @RequestBody @Valid CommentFormDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<CommentResponse> createComment(@PathVariable Long postId,
+                                                      @RequestBody @Valid CommentFormDto dto,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(commentService.create(postId, dto, userDetails));
     }
 
     @PutMapping("/{postId}/comments/{commentId}")
-    public ApiResponse<CommentResponse> updateComment(
-            @PathVariable Long postId,
-            @PathVariable Long commentId,
-            @RequestBody @Valid CommentUpdateDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<CommentResponse> updateComment(@PathVariable Long postId,
+                                                      @PathVariable Long commentId,
+                                                      @RequestBody @Valid CommentUpdateDto dto,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(commentService.update(postId, commentId, dto, userDetails));
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public ApiResponse<Void> deleteComment(
-            @PathVariable Long postId,
-            @PathVariable Long commentId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<Void> deleteComment(@PathVariable Long postId,
+                                           @PathVariable Long commentId,
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
         commentService.delete(postId, commentId, userDetails);
         return ApiResponse.success(null);
     }

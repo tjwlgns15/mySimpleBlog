@@ -1,4 +1,10 @@
 spring:
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
@@ -12,10 +18,10 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/simple_blog?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3308/simpleBlog?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: admin123
-    name: simple_blog
+    password: 1234
+    name: simpleBlog
 
   jpa:
     hibernate:
@@ -78,11 +84,14 @@ jwt:
   access-token-validity: 1800
 
 cors:
-  allowed-origins: http://localhost:8080
+  allowed-origins: http://localhost:8081
 
 app:
   oauth2:
-    authorized-redirect-uri: http://localhost:8080/user  # 소셜 로그인 후 리다이렉트될 URI
+    authorized-redirect-uri: http://localhost:8081/user  # 소셜 로그인 후 리다이렉트될 URI
+
+server:
+  port: 8081
 
 #logging:
 #  level:
@@ -94,3 +103,7 @@ decorator:
   datasource:
     p6spy:
       enable-logging: true
+
+file:
+  upload:
+    path: src/main/resources/static/images

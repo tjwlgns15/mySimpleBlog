@@ -19,7 +19,7 @@ public class ProfileImage extends BaseTimeEntity {
     private String url;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id")  // user_id 컬럼 추가
     private User user;
 
     @Builder
@@ -27,7 +27,4 @@ public class ProfileImage extends BaseTimeEntity {
         this.url = url;
         this.user = user;
     }
-
-
-
 }

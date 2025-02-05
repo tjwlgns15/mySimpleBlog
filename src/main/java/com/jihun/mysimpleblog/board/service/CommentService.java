@@ -89,14 +89,10 @@ public class CommentService {
 
     public PageResponse<CommentResponse> getComments(Long postId, int page) {
         validatePostExists(postId);
-
-        Page<Comment> comments = commentRepository.findByPostIdWithAuthor(
-                postId,
-                PageRequest.of(page, COMMENT_PAGE_SIZE)
-        );
-
+        Page<Comment> comments = commentRepository.findByPostIdWithAuthor(postId, PageRequest.of(page, COMMENT_PAGE_SIZE));
         return new PageResponse<>(comments.map(CommentResponse::fromEntity));
     }
+
 
     private User validateAndGetUser(CustomUserDetails userDetails) {
         if (userDetails == null) {

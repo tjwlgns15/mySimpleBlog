@@ -1,12 +1,10 @@
-package com.jihun.mysimpleblog.board.controller;
+package com.jihun.mysimpleblog.board.controller.api;
 
 import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
-import com.jihun.mysimpleblog.auth.entity.Role;
 import com.jihun.mysimpleblog.board.entity.dto.category.CategoryRequest;
 import com.jihun.mysimpleblog.board.entity.dto.category.CategoryResponse;
 import com.jihun.mysimpleblog.board.service.CategoryService;
 import com.jihun.mysimpleblog.global.entity.ApiResponse;
-import com.jihun.mysimpleblog.global.entity.BaseTimeEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,17 +30,15 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<CategoryResponse> updateCategory(
-            @PathVariable Long id,
-            @RequestBody @Valid CategoryRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<CategoryResponse> updateCategory(@PathVariable Long id,
+                                                        @RequestBody @Valid CategoryRequest request,
+                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(categoryService.update(id, request, userDetails));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteCategory(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<Void> deleteCategory(@PathVariable Long id,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
         categoryService.delete(id, userDetails);
         return ApiResponse.success(null);
     }

@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // JWT 토큰을 쿠키에 추가
         Cookie cookie = new Cookie("jwt", token);
         cookie.setHttpOnly(true);  // JavaScript에서 접근 불가능하게 설정
-        cookie.setSecure(true);    // HTTPS에서만 전송되도록 설정
+        cookie.setSecure(false);    // HTTPS에서만 전송되도록 설정
         cookie.setPath("/");       // 모든 경로에서 접근 가능하도록 설정
         cookie.setMaxAge(3600);    // 쿠키 유효시간 1시간
         response.addCookie(cookie);

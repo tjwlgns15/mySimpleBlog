@@ -14,6 +14,8 @@ public class UserResponse {
     private Long id;
     private String email;
     private String name;
+    private String introduction;
+    private String profileImageUrl;
     private Provider provider;
     private Role role;
 
@@ -23,6 +25,8 @@ public class UserResponse {
                 user.getId(),
                 user.getEmail(),
                 user.getName(),
+                user.getIntroduction(),
+                user.getProfileImage() != null ? user.getProfileImage().getUrl() : null,
                 user.getProvider(),
                 user.getRole()
         );

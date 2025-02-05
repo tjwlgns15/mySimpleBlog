@@ -25,3 +25,7 @@
  - 게시물 좋아요, 조회수 추가
 
  - 쿼리 확인용 의존성 추가 ( P6spyConfig, spy.properties )
+
+# My Page
+ - 프로필 사진 등록
+ - 소개글 작성

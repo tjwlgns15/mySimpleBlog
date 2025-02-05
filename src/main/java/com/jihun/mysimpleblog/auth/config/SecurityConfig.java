@@ -57,11 +57,59 @@ public class SecurityConfig {
 
     private void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/oauth2/**", "/login/**").permitAll()
-                .requestMatchers("/", "/home/**", "/boards", "/boards/**").permitAll()
-                .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/user/**", "/api/posts/**", "/api/comments/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/admin/**", "/api/categories/**").hasRole("ADMIN")
+                // 인증 없이 접근 가능한 엔드포인트
+                .requestMatchers(
+                        // 인증 관련
+                        "/api/auth/signup",
+                        "/api/auth/login",
+                        "/oauth2/**",
+                        "/login/**",
+
+                        // 정적 리소스
+                        "/static/**",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+
+                        // 홈 관련 뷰
+                        "/",
+                        "/home/**",
+
+                        // 게시판 조회
+                        "/boards",
+                        "/api/posts",
+                        "/api/posts/{id}",
+                        "/api/posts/{postId}/comments",
+                        "/api/categories"
+                ).permitAll()
+
+                // 인증된 사용자만 접근 가능한 엔드포인트
+                .requestMatchers(
+                        // 게시글 작성/수정/삭제
+                        "/api/posts/new",
+                        "/api/posts/{id}",  // PUT, DELETE
+
+                        // 댓글 작성/수정/삭제
+                        "/api/posts/{postId}/comments/new",
+                        "/api/posts/{postId}/comments/{commentId}",
+
+                        // 좋아요
+                        "/api/posts/{postId}/like",
+
+                        // 사용자 정보
+                        "/api/auth/me",
+                        "/user/**",
+                        "/my-page"
+                ).hasAnyRole("USER", "ADMIN")
+
+                // 관리자만 접근 가능한 엔드포인트
+                .requestMatchers(
+                        "/admin/**",
+                        "/api/categories/new",
+                        "/api/categories/{id}"  // PUT, DELETE
+                ).hasRole("ADMIN")
+
+                // 나머지 모든 요청은 인증 필요
                 .anyRequest().authenticated()
         );
     }
@@ -75,7 +123,7 @@ public class SecurityConfig {
 
     private void configureOAuth2(HttpSecurity http) throws Exception {
         http.oauth2Login(oauth2 -> oauth2
-                .loginPage("/home/login")
+                .loginPage("/login")
                 .defaultSuccessUrl("/user")
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService()))
                 .successHandler(oAuth2AuthenticationSuccessHandler())
@@ -138,6 +186,4 @@ public class SecurityConfig {
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
         return new OAuth2AuthenticationSuccessHandler(jwtTokenProvider);
     }
-
-
 }
