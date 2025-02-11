@@ -63,7 +63,7 @@ public class SecurityConfig {
                         "/api/auth/signup",
                         "/api/auth/login",
                         "/oauth2/**",
-                        "/login/**",
+                        "/auth/**",
 
                         // 정적 리소스
                         "/static/**",
@@ -105,6 +105,7 @@ public class SecurityConfig {
                 // 관리자만 접근 가능한 엔드포인트
                 .requestMatchers(
                         "/admin/**",
+                        "/api/admin/**",
                         "/api/categories/new",
                         "/api/categories/{id}"  // PUT, DELETE
                 ).hasRole("ADMIN")

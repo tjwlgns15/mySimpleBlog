@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Page</title>
+    <th:block th:replace="~{fragments/header :: header('유저 페이지')}"></th:block>
     <style>
         .container {
             max-width: 800px;
@@ -71,39 +69,27 @@
 </div>
 
 <script>
-    // URL에서 token 파라미터 체크
     window.onload = async function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        if (token) {
-            localStorage.setItem('token', token);
-            // token 파라미터 제거
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        await loadUserInfo();
+        loadUserInfo();
     };
 
     async function loadUserInfo() {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/home/login';
-                return;
-            }
-
-            const response = await fetch('http://localhost:8081/api/auth/me', {
+            const response = await fetch('/api/auth/me', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json',
                 }
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to load user information');
-            }
+            const result = await response.json();
 
-            const user = await response.json();
-            displayUserInfo(user);
+            if (result.status === 200) {
+                const user = result.data;
+                displayUserInfo(user);
+            } else {
+                throw new Error(result.message || 'Failed to load user information');
+            }
         } catch (error) {
             console.error('Error:', error);
             document.getElementById('error-message').style.display = 'block';
@@ -130,7 +116,7 @@
                 // 쿠키 삭제
                 document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 // 로그인 페이지로 이동
-                window.location.href = '/home';
+                window.location.href = '/auth/login';
             }).catch(error => {
                 console.error('Logout error:', error);
                 alert('로그아웃 중 오류가 발생했습니다.');

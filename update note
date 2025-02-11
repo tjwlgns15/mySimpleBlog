@@ -29,3 +29,10 @@
 # My Page
  - 프로필 사진 등록
  - 소개글 작성
+
+
+# Admin - Dashboard
+ - 토큰 버그 수정 (JWT, Oauth2)
+ - my page 권한, 게시글 목록 표시
+ - admin 페이지 대시보드 추가
+ - fragments/header 추가

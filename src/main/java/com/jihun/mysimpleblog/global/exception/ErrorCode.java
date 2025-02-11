@@ -18,6 +18,7 @@ public enum ErrorCode {
 
     // 401 Unauthorized
     LOGIN_REQUIRED(401, "로그인이 필요합니다."),
+    LOGIN_FAILED(401, "이메일 또는 비밀번호가 일치하지 않습니다."),
 
     // 403 Forbidden
     NOT_AUTHORIZED(403, "권한이 없습니다."),

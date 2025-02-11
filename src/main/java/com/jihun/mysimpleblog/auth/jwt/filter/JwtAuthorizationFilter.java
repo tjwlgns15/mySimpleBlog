@@ -36,20 +36,31 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        // 1. Authorization 헤더에서 JWT 토큰 추출
+        // Authorization 헤더 또는 쿠키에서 JWT 토큰 추출
         String token = resolveToken(request);
 
-        // 2. 토큰 유효성 검증
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 3. 토큰에서 사용자 정보 추출
+        // 토큰이 만료되었다면 쿠키 삭제
+        if (token != null && !jwtTokenProvider.validateToken(token)) {
+            // 만료된 토큰의 쿠키 삭제
+            Cookie cookie = new Cookie("jwt", null);
+            cookie.setMaxAge(0);  // 즉시 만료
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            // 인증 정보 제거
+            SecurityContextHolder.clearContext();
+        }
+        // 토큰 유효성 검증
+        else if (token != null && jwtTokenProvider.validateToken(token)) {
+            // 토큰에서 사용자 정보 추출
             Claims claims = jwtTokenProvider.parseClaims(token);
             String email = claims.getSubject();
 
-            // 4. 사용자 정보 조회
+            // 사용자 정보 조회
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            // 5. 보안 컨텍스트에 인증 정보 설정
+            // 보안 컨텍스트에 인증 정보 설정
             CustomUserDetails principal = new CustomUserDetails(user);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     principal, "", principal.getAuthorities());
@@ -67,7 +78,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         // 2. 쿠키에서 토큰 추출 시도
-        jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+        Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("jwt".equals(cookie.getName())) {

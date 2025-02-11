@@ -22,6 +22,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.jihun.mysimpleblog.global.constant.GlobalConstant.POST_PAGE_SIZE;
 import static com.jihun.mysimpleblog.global.exception.ErrorCode.*;
 
@@ -35,17 +38,25 @@ public class PostService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
+    public List<PostResponse> findAll() {
+        return postRepository.findAll().stream().map(PostResponse::fromEntity).collect(Collectors.toList());
+    }
+
     public Page<PostResponse> searchPosts(PostSearchDto searchDto, int page) {
         log.info("Searching posts. title: {}, author: {}, page: {}", searchDto.getTitle(), searchDto.getAuthorName(), page);
-
-        PageRequest pageable = PageRequest.of(page, POST_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
-
+        PageRequest pageable = getPageRequest(page);
         Page<Post> posts = postRepository.findAllBySearchCondition(
                 searchDto.getTitle(),
                 searchDto.getAuthorName(),
                 pageable
         );
 
+        return posts.map(PostResponse::fromEntity);
+    }
+
+    public Page<PostResponse> findAllByAuthorId(Long authorId, int page) {
+        PageRequest pageable = getPageRequest(page);
+        Page<Post> posts = postRepository.findAllByAuthorId(authorId, pageable);
         return posts.map(PostResponse::fromEntity);
     }
 
@@ -152,5 +163,10 @@ public class PostService {
 
         postRepository.delete(post);
         log.info("Post deleted. id: {}, deleted by: {}", id, user.getEmail());
+    }
+
+
+    private static PageRequest getPageRequest(int page) {
+        return PageRequest.of(page, POST_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 }

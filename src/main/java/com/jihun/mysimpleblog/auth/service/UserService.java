@@ -1,5 +1,6 @@
 package com.jihun.mysimpleblog.auth.service;
 
+import com.jihun.mysimpleblog.auth.config.core.CustomUserDetails;
 import com.jihun.mysimpleblog.auth.entity.ProfileImage;
 import com.jihun.mysimpleblog.auth.entity.User;
 import com.jihun.mysimpleblog.auth.entity.dto.ProfileUpdateRequest;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.jihun.mysimpleblog.global.exception.ErrorCode.*;
 
@@ -43,6 +46,21 @@ public class UserService {
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public UserResponse findByIdWithProfileImage(CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            throw new CustomException(LOGIN_REQUIRED);
+        }
+
+        User user = userRepository.findByIdWithProfileImage(userDetails.getUser().getId())
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        return UserResponse.fromEntity(user);
+    }
+
+    public List<UserResponse> findAll() {
+        return userRepository.findAll().stream().map(UserResponse::fromEntity).collect(Collectors.toList());
     }
 
     @Transactional
@@ -79,13 +97,5 @@ public class UserService {
         return UserResponse.fromEntity(userRepository.save(user));
     }
 
-    @Transactional(readOnly = true)
-    public UserResponse findByIdWithProfileImage(Long userId) {
-        User user = userRepository.findByIdWithProfileImage(userId)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-        return UserResponse.fromEntity(user);
-
-
-    }
 }

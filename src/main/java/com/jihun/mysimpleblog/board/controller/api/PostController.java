@@ -63,6 +63,14 @@ public class PostController {
         return ApiResponse.success(null);
     }
 
+    @GetMapping("/my-posts")
+    public ApiResponse<PageResponse<PostResponse>> getMyPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page) {
+        Page<PostResponse> postPage = postService.findAllByAuthorId(userDetails.getUser().getId(), page);
+        return ApiResponse.success(new PageResponse<>(postPage));
+    }
+
     /**
      * 좋아요
      */
@@ -109,4 +117,6 @@ public class PostController {
         commentService.delete(postId, commentId, userDetails);
         return ApiResponse.success(null);
     }
+
+
 }

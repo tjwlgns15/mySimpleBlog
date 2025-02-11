@@ -23,7 +23,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(errorCode.getCode(), errorCode.getMessage(), null);
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode errorCode, String message) {
-        return new ApiResponse<>(errorCode.getCode(), message, null);
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>(500, message, null);
     }
 }

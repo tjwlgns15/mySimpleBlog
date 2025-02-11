@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +19,7 @@ public class UserResponse {
     private String introduction;
     private String profileImageUrl;
     private Provider provider;
+    private LocalDateTime createdAt;
     private Role role;
 
     // Entity -> DTO 변환 메서드
@@ -28,6 +31,7 @@ public class UserResponse {
                 user.getIntroduction(),
                 user.getProfileImage() != null ? user.getProfileImage().getUrl() : null,
                 user.getProvider(),
+                user.getCreatedAt(),
                 user.getRole()
         );
     }

@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <th:block th:replace="~{fragments/header :: header('마이 페이지')}"></th:block>
     <style>
         .profile-image {
             width: 150px;
@@ -12,11 +9,13 @@
             border-radius: 50%;
             object-fit: cover;
         }
+
         .profile-image-container {
             position: relative;
             width: 150px;
             margin: 0 auto;
         }
+
         .image-upload-label {
             position: absolute;
             bottom: 0;
@@ -27,8 +26,42 @@
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
         #imageUpload {
             display: none;
+        }
+
+        .card {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: none;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            border-radius: 0 !important;
+            transition: all 0.2s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            padding: 8px 20px;
+        }
+
+        .form-control:disabled, .form-control[readonly] {
+            background-color: #f8f9fa;
         }
     </style>
 </head>
@@ -40,8 +73,7 @@
                 <div class="card-body">
                     <div class="text-center mb-4">
                         <div class="profile-image-container">
-                            <img id="profileImage"
-                                 th:src="${user.profileImageUrl != null ? user.profileImageUrl : '/images/default-profile.png'}"
+                            <img id="profileImage" src="/images/default-profile.jpg"
                                  class="profile-image" alt="Profile Image">
                             <label for="imageUpload" class="image-upload-label">
                                 <i class="bi bi-camera-fill"></i>
@@ -52,21 +84,37 @@
 
                     <form id="profileForm">
                         <div class="mb-3">
+                            <label for="role" class="form-label">등급 권한</label>
+                            <input type="text" class="form-control bg-light" id="role" readonly disabled>
+                        </div>
+                        <div class="mb-3">
                             <label for="email" class="form-label">이메일</label>
-                            <input type="email" class="form-control" id="email" th:value="${user.email}" readonly>
+                            <input type="email" class="form-control" id="email" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="name" class="form-label">이름</label>
-                            <input type="text" class="form-control" id="name" th:value="${user.name}">
+                            <input type="text" class="form-control" id="name">
                         </div>
                         <div class="mb-3">
                             <label for="introduction" class="form-label">자기소개</label>
-                            <textarea class="form-control" id="introduction" rows="3" th:text="${user.introduction}"></textarea>
+                            <textarea class="form-control" id="introduction" rows="3"></textarea>
                         </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">프로필 수정</button>
                         </div>
                     </form>
+
+                    <!-- 게시글 목록 카드 -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">내가 작성한 게시글</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="postsList" class="list-group">
+                                <!-- 게시글이 여기에 동적으로 추가됨 -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,6 +122,68 @@
 </div>
 
 <script th:inline="javascript">
+    // 사용자 정보 로드
+    async function loadUserInfo() {
+        try {
+            const response = await fetch('/api/auth/me');
+            const result = await response.json();
+
+            if (result.status === 200) {
+                const user = result.data;
+                document.getElementById('email').value = user.email;
+                document.getElementById('name').value = user.name;
+                document.getElementById('role').value = user.role === 'USER' ? '일반 유저' : '관리자';
+                if (user.profileImageUrl) {
+                    document.getElementById('profileImage').src = user.profileImageUrl;
+                }
+                if (user.introduction) {
+                    document.getElementById('introduction').value = user.introduction;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading user info:', error);
+        }
+    }
+
+    // 게시글 목록 로드
+    async function loadPosts() {
+        try {
+            const response = await fetch('/api/posts/my-posts');
+            const result = await response.json();
+
+            if (result.status === 200) {
+                const posts = result.data.content;
+                const postsListElement = document.getElementById('postsList');
+
+                if (posts.length === 0) {
+                    postsListElement.innerHTML = '<p class="text-center">작성한 게시글이 없습니다.</p>';
+                    return;
+                }
+
+                postsListElement.innerHTML = posts.map(post => `
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${post.title}</h6>
+                        <small>${new Date(post.createdAt).toLocaleDateString()}</small>
+                    </div>
+                    <p class="mb-1">
+                        <span class="badge bg-secondary">${post.categoryName}</span>
+                        <small class="ms-2">
+                            <i class="bi bi-eye"></i>
+                            <span>${post.viewCount}</span>
+                            <i class="bi bi-heart ms-2"></i>
+                            <span>${post.likeCount}</span>
+                        </small>
+                    </p>
+                    <a href="/posts/${post.id}" class="stretched-link"></a>
+                </div>
+            `).join('');
+            }
+        } catch (error) {
+            console.error('Error loading posts:', error);
+        }
+    }
+
     // 프로필 이미지 업로드
     document.getElementById('imageUpload').addEventListener('change', async (e) => {
         const file = e.target.files[0];
@@ -87,11 +197,13 @@
                 method: 'POST',
                 body: formData
             });
+            const result = await response.json();
 
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById('profileImage').src = data.profileImageUrl;
+            if (result.status === 200) {
+                document.getElementById('profileImage').src = result.data.profileImageUrl;
                 alert('프로필 이미지가 업데이트되었습니다.');
+            } else {
+                alert(result.message || '이미지 업로드에 실패했습니다.');
             }
         } catch (error) {
             alert('이미지 업로드에 실패했습니다.');
@@ -116,17 +228,23 @@
                 },
                 body: JSON.stringify(formData)
             });
+            const result = await response.json();
 
-            if (response.ok) {
+            if (result.status === 200) {
                 alert('프로필이 업데이트되었습니다.');
             } else {
-                const error = await response.json();
-                alert(error.message || '프로필 업데이트에 실패했습니다.');
+                alert(result.message || '프로필 업데이트에 실패했습니다.');
             }
         } catch (error) {
             alert('프로필 업데이트에 실패했습니다.');
             console.error('Error:', error);
         }
+    });
+
+    // 페이지 로드 시 데이터 로드
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserInfo();
+        loadPosts();
     });
 </script>
 

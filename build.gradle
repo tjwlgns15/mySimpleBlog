@@ -45,6 +45,8 @@ dependencies {
     // 쿼리 확인용
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
+    implementation 'org.webjars:jquery:3.6.0'
+
 }
 
 tasks.named('test') {

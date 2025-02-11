@@ -9,11 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    // 제목, 작성자로 조회
     @Query("SELECT DISTINCT p FROM Post p " +
             "JOIN FETCH p.author " +
             "JOIN FETCH p.category " +
@@ -31,5 +33,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByIdWithAuthorAndCategory(@Param("id") Long id);
 
     boolean existsByCategoryId(Long id);
+
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "JOIN FETCH p.author " +
+            "JOIN FETCH p.category " +
+            "WHERE p.author.id = :authorId")
+    Page<Post> findAllByAuthorId(@Param("authorId") Long authorId, Pageable pageable);
 
 }

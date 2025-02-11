@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <th:block th:replace="~{fragments/header :: header('로그인')}"></th:block>
     <style>
         .container {
             max-width: 400px;
@@ -15,28 +13,71 @@
         .form-group {
             margin-bottom: 15px;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
         }
+
         .form-group input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 14px;
         }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
         .btn {
-            background-color: #007bff;
-            color: white;
+            flex: 1;
             padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100%;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.2s;
         }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
         .error-message {
-            color: red;
+            color: #dc3545;
             margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
             display: none;
         }
 
@@ -104,7 +145,10 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="btn">Login</button>
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Login</button>
+            <a th:href="@{/auth/signup}" class="btn btn-secondary">Sign Up</a>
+        </div>
         <div id="errorMessage" class="error-message">Invalid email or password</div>
     </form>
 
@@ -128,7 +172,7 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -137,7 +181,7 @@
         const errorMessage = document.getElementById('errorMessage');
 
         try {
-            const response = await fetch('http://localhost:8081/api/auth/login', {
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -145,17 +189,19 @@
                 body: JSON.stringify({ email, password })
             });
 
-            if (!response.ok) {
-                throw new Error('Login failed');
+            const apiResponse = await response.json();
+
+            if (apiResponse.status === 200) {
+                // 서버에서 제공하는 리다이렉트 URL로 이동
+                window.location.href = apiResponse.data.redirectUrl;
+            } else {
+                errorMessage.textContent = apiResponse.message || '로그인에 실패했습니다.';
+                errorMessage.style.display = 'block';
             }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            window.location.href = '/user';
-
         } catch (error) {
+            errorMessage.textContent = '로그인 중 오류가 발생했습니다.';
             errorMessage.style.display = 'block';
-            console.error('Error:', error);
+            console.error('login error:', error);
         }
     });
 </script>
