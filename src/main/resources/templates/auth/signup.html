@@ -1,170 +1,424 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="~{fragments/header :: header('회원가입')}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - My Simple Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
-            background-color: #f7f9fc;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        form {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .signup-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
-            margin: 2rem auto;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
         }
 
-        .form-title {
+        .signup-title {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-            font-weight: 600;
+            margin-bottom: 2.5rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
         }
 
         .form-label {
             color: #34495e;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: block;
+            font-size: 1rem;
         }
 
         .form-control {
-            border: 2px solid #edf2f7;
-            border-radius: 8px;
-            padding: 0.8rem;
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
             transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .form-control:focus {
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             outline: none;
+            background: white;
         }
 
         .form-control.is-invalid {
-            border-color: #e53e3e;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .form-control.is-valid {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
         }
 
         .invalid-feedback {
-            color: #e53e3e;
+            color: #e74c3c;
             font-size: 0.875rem;
-            margin-top: 0.25rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
         }
+
+        .valid-feedback {
+            color: #27ae60;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .strength-weak { color: #e74c3c; }
+        .strength-medium { color: #f39c12; }
+        .strength-strong { color: #27ae60; }
 
         .btn-primary {
-            background-color: #4299e1;
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            padding: 0.8rem;
+            padding: 1rem;
+            border-radius: 12px;
+            color: white;
             font-weight: 600;
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
         }
 
-        .btn-primary:hover {
-            background-color: #3182ce;
-            transform: translateY(-1px);
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:active {
             transform: translateY(0);
         }
 
-        .mb-3 {
-            margin-bottom: 1.5rem;
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .login-link {
             text-align: center;
-            margin-top: 1.5rem;
-            color: #718096;
-        }
-
-        .login-link a {
-            color: #4299e1;
-            text-decoration: none;
+            margin-top: 2rem;
+            color: #7f8c8d;
             font-weight: 500;
         }
 
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
         .login-link a:hover {
+            color: #764ba2;
             text-decoration: underline;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            display: none;
         }
     </style>
 </head>
 
 <body>
-<form th:action="@{/api/auth/signup}" method="post">
-    <h2 class="form-title">회원가입</h2>
+<div class="signup-container">
+    <h2 class="signup-title">회원가입</h2>
 
-    <div class="mb-3">
-        <label for="email" class="form-label">이메일</label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-        <div class="invalid-feedback" id="emailError"></div>
+    <div class="success-message" id="successMessage">
+        회원가입이 완료되었습니다! 로그인 페이지로 이동합니다...
     </div>
 
-    <div class="mb-3">
-        <label for="password" class="form-label">비밀번호</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
-        <div class="invalid-feedback" id="passwordError"></div>
-    </div>
+    <form id="signupForm">
+        <div class="form-group">
+            <label for="username" class="form-label">이메일</label>
+            <input type="email" class="form-control" id="username" name="username"
+                   placeholder="name@example.com" required>
+            <div class="invalid-feedback" id="usernameError"></div>
+            <div class="valid-feedback" id="usernameSuccess"></div>
+        </div>
 
-    <div class="mb-3">
-        <label for="name" class="form-label">이름</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="이름을 입력하세요" required>
-        <div class="invalid-feedback" id="nameError"></div>
-    </div>
+        <div class="form-group">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" class="form-control" id="password" name="password"
+                   placeholder="비밀번호를 입력하세요" required>
+            <div class="invalid-feedback" id="passwordError"></div>
+            <div class="password-strength" id="passwordStrength"></div>
+        </div>
 
-    <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-primary">가입하기</button>
-    </div>
+        <div class="form-group">
+            <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                   placeholder="비밀번호를 다시 입력하세요" required>
+            <div class="invalid-feedback" id="confirmPasswordError"></div>
+            <div class="valid-feedback" id="confirmPasswordSuccess"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="name" class="form-label">이름</label>
+            <input type="text" class="form-control" id="name" name="name"
+                   placeholder="이름을 입력하세요" required>
+            <div class="invalid-feedback" id="nameError"></div>
+            <div class="valid-feedback" id="nameSuccess"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">가입하기</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            회원가입 처리 중...
+        </div>
+    </form>
 
     <div class="login-link">
         이미 계정이 있으신가요? <a href="/auth/login">로그인</a>
     </div>
-</form>
-
-<!-- 기존 script 부분 유지 -->
+</div>
 
 <script>
-    const form = document.querySelector('form');
-    const inputs = form.querySelectorAll('input');
+    const signupForm = document.getElementById('signupForm');
+    const inputs = signupForm.querySelectorAll('input');
+    const loading = document.getElementById('loading');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMessage = document.getElementById('successMessage');
 
-    // 입력 필드 검증 및 에러 표시 함수
+    // 에러 표시 함수
     function showError(inputElement, message) {
+        inputElement.classList.remove('is-valid');
         inputElement.classList.add('is-invalid');
         const errorDiv = document.getElementById(inputElement.id + 'Error');
-        errorDiv.textContent = message;
+        const successDiv = document.getElementById(inputElement.id + 'Success');
+        if (errorDiv) errorDiv.textContent = message;
+        if (successDiv) successDiv.textContent = '';
     }
 
-    // 에러 메시지 초기화 함수
-    function clearError(inputElement) {
+    // 성공 표시 함수
+    function showSuccess(inputElement, message = '') {
         inputElement.classList.remove('is-invalid');
+        inputElement.classList.add('is-valid');
         const errorDiv = document.getElementById(inputElement.id + 'Error');
-        errorDiv.textContent = '';
+        const successDiv = document.getElementById(inputElement.id + 'Success');
+        if (errorDiv) errorDiv.textContent = '';
+        if (successDiv) successDiv.textContent = message;
     }
 
-    // 모든 입력 필드의 에러 초기화
-    inputs.forEach(input => {
-        input.addEventListener('input', () => clearError(input));
+    // 에러 초기화 함수
+    function clearValidation(inputElement) {
+        inputElement.classList.remove('is-invalid', 'is-valid');
+        const errorDiv = document.getElementById(inputElement.id + 'Error');
+        const successDiv = document.getElementById(inputElement.id + 'Success');
+        if (errorDiv) errorDiv.textContent = '';
+        if (successDiv) successDiv.textContent = '';
+    }
+
+    // 비밀번호 강도 체크
+    function checkPasswordStrength(password) {
+        const strengthDiv = document.getElementById('passwordStrength');
+        let strength = 0;
+        let message = '';
+
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+        if (password.length === 0) {
+            strengthDiv.textContent = '';
+            return;
+        }
+
+        if (strength < 3) {
+            strengthDiv.className = 'password-strength strength-weak';
+            message = '약함 (8자 이상, 영문 대소문자, 숫자, 특수문자 조합 권장)';
+        } else if (strength < 4) {
+            strengthDiv.className = 'password-strength strength-medium';
+            message = '보통';
+        } else {
+            strengthDiv.className = 'password-strength strength-strong';
+            message = '강함';
+        }
+
+        strengthDiv.textContent = `비밀번호 강도: ${message}`;
+    }
+
+    // 이메일 유효성 검사
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // 폼 유효성 검사
+    function validateForm() {
+        let isValid = true;
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const name = document.getElementById('name').value;
+
+        // 이메일 검사
+        if (!validateEmail(username)) {
+            showError(document.getElementById('username'), '올바른 이메일 형식을 입력해주세요.');
+            isValid = false;
+        } else {
+            showSuccess(document.getElementById('username'), '유효한 이메일입니다.');
+        }
+
+        // 비밀번호 검사
+        if (password.length < 6) {
+            showError(document.getElementById('password'), '비밀번호는 최소 6자 이상이어야 합니다.');
+            isValid = false;
+        }
+
+        // 비밀번호 확인
+        if (password !== confirmPassword) {
+            showError(document.getElementById('confirmPassword'), '비밀번호가 일치하지 않습니다.');
+            isValid = false;
+        } else if (confirmPassword.length > 0) {
+            showSuccess(document.getElementById('confirmPassword'), '비밀번호가 일치합니다.');
+        }
+
+        // 이름 검사
+        if (name.length < 2) {
+            showError(document.getElementById('name'), '이름은 2자 이상이어야 합니다.');
+            isValid = false;
+        } else {
+            showSuccess(document.getElementById('name'), '유효한 이름입니다.');
+        }
+
+        return isValid;
+    }
+
+    // 입력 필드 이벤트 리스너
+    document.getElementById('username').addEventListener('input', function() {
+        const email = this.value;
+        if (email.length === 0) {
+            clearValidation(this);
+        } else if (validateEmail(email)) {
+            showSuccess(this, '유효한 이메일입니다.');
+        } else {
+            showError(this, '올바른 이메일 형식을 입력해주세요.');
+        }
     });
 
-    form.addEventListener('submit', function(e) {
+    document.getElementById('password').addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+        if (this.value.length === 0) {
+            clearValidation(this);
+        } else if (this.value.length < 6) {
+            showError(this, '비밀번호는 최소 6자 이상이어야 합니다.');
+        } else {
+            clearValidation(this);
+        }
+
+        // 비밀번호 확인 재검사
+        const confirmPassword = document.getElementById('confirmPassword');
+        if (confirmPassword.value.length > 0) {
+            if (this.value === confirmPassword.value) {
+                showSuccess(confirmPassword, '비밀번호가 일치합니다.');
+            } else {
+                showError(confirmPassword, '비밀번호가 일치하지 않습니다.');
+            }
+        }
+    });
+
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        if (this.value.length === 0) {
+            clearValidation(this);
+        } else if (this.value === password) {
+            showSuccess(this, '비밀번호가 일치합니다.');
+        } else {
+            showError(this, '비밀번호가 일치하지 않습니다.');
+        }
+    });
+
+    document.getElementById('name').addEventListener('input', function() {
+        if (this.value.length === 0) {
+            clearValidation(this);
+        } else if (this.value.length < 2) {
+            showError(this, '이름은 2자 이상이어야 합니다.');
+        } else {
+            showSuccess(this, '유효한 이름입니다.');
+        }
+    });
+
+    // 회원가입 폼 제출
+    signupForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // 모든 에러 메시지 초기화
-        inputs.forEach(input => clearError(input));
+        if (!validateForm()) {
+            return;
+        }
 
         const formData = {
-            email: document.getElementById('email').value,
+            username: document.getElementById('username').value,
             password: document.getElementById('password').value,
             name: document.getElementById('name').value
         };
+
+        // 로딩 표시
+        loading.style.display = 'block';
+        submitBtn.style.display = 'none';
 
         fetch('/api/auth/signup', {
             method: 'POST',
@@ -176,27 +430,76 @@
             .then(response => response.json())
             .then(result => {
                 console.log(result);
+
                 if (result.status === 200) {
-                    alert('회원가입이 완료되었습니다.');
-                    window.location.href = '/auth/login';
+                    // 성공 메시지 표시
+                    successMessage.style.display = 'block';
+                    signupForm.style.display = 'none';
+
+                    // 3초 후 로그인 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = '/auth/login';
+                    }, 3000);
                 } else {
                     // 에러 메시지에 따라 적절한 입력 필드에 에러 표시
-                    switch(result.message) {
-                        case '이미 존재하는 이메일입니다.':
-                            showError(document.getElementById('email'), result.message);
-                            break;
-                        case '이미 존재하는 이름입니다.':
-                            showError(document.getElementById('name'), result.message);
-                            break;
-                        default:
-                            alert(result.message);
+                    if (result.message.includes('이메일') || result.message.includes('존재')) {
+                        showError(document.getElementById('username'), result.message);
+                    } else if (result.message.includes('이름')) {
+                        showError(document.getElementById('name'), result.message);
+                    } else if (result.message.includes('비밀번호')) {
+                        showError(document.getElementById('password'), result.message);
+                    } else {
+                        alert(result.message);
                     }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('서버 오류가 발생했습니다.');
+                alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            })
+            .finally(() => {
+                // 로딩 숨기기
+                loading.style.display = 'none';
+                submitBtn.style.display = 'block';
             });
+    });
+
+    // 엔터 키로 폼 제출 방지 (유효성 검사 후에만 제출)
+    inputs.forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+
+                // 마지막 입력 필드에서 엔터를 누르면 폼 제출
+                if (this.id === 'name') {
+                    signupForm.dispatchEvent(new Event('submit'));
+                } else {
+                    // 다음 입력 필드로 이동
+                    const currentIndex = Array.from(inputs).indexOf(this);
+                    if (currentIndex < inputs.length - 1) {
+                        inputs[currentIndex + 1].focus();
+                    }
+                }
+            }
+        });
+    });
+
+    // 페이지 로드 시 첫 번째 입력 필드에 포커스
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('username').focus();
+
+        // 브라우저 자동완성 스타일 개선
+        const style = document.createElement('style');
+        style.textContent = `
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.9) inset !important;
+            -webkit-text-fill-color: #2c3e50 !important;
+            border-color: #667eea !important;
+        }
+    `;
+        document.head.appendChild(style);
     });
 </script>
 </body>

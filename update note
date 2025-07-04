@@ -30,9 +30,15 @@
  - 프로필 사진 등록
  - 소개글 작성
 
-
 # Admin - Dashboard
  - 토큰 버그 수정 (JWT, Oauth2)
  - my page 권한, 게시글 목록 표시
  - admin 페이지 대시보드 추가
  - fragments/header 추가
+
+# Reboot
+ - 프로젝트 구조 변경
+ - 계층별 권한 구현 (roleHierarchy 사용)
+ - jwt 삭제
+ - dto, mapper 정리 및 구현
+ - controller, service 코드 리팩토링
